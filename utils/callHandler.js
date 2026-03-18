@@ -1,10 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// WebRTC Signaling — your server never touches the actual audio/video data.
-// It only relays small "signaling" messages between peers so they can find
-// each other and establish a direct connection.
-// ─────────────────────────────────────────────────────────────────────────────
-
-import { getSockets } from '../utils/helper.js'
 import {
   CALL_OFFER, CALL_ANSWER, CALL_ICE_CANDIDATE,
   CALL_INCOMING, CALL_ENDED, CALL_REJECTED, CALL_ACCEPTED,
@@ -13,70 +6,43 @@ import {
 export const registerCallHandlers = (io, socket, userSocketIds) => {
   const user = socket.user
 
-  // ── Someone initiates a call ───────────────────────────────────────────────
-  // Relay the offer + caller info to the target user
-  socket.on(CALL_OFFER, ({ to, offer, chatId, type, isGroup, caller, membersMap }) => {
-    console.log('CALL_OFFER received, to:', to)
+  // Caller → Callee: relay offer
+  socket.on(CALL_OFFER, ({ to, offer, type }) => {
     const targetSocketId = userSocketIds.get(to.toString())
-     console.log('target socket:', targetSocketId)
-    if (!targetSocketId) return // user is offline, could emit a "missed call" event here
-
+    if (!targetSocketId) return
     io.to(targetSocketId).emit(CALL_INCOMING, {
       from: user._id.toString(),
       offer,
-      chatId,
       type,
-      isGroup,
-      caller: {
-        _id: user._id,
-        name: user.name,
-        avatar: user.avatar,
-      },
+      caller: { _id: user._id, name: user.name, avatar: user.avatar?.[0]?.url || user.avatar?.[0] || user.avatar || null },
     })
   })
 
-  // ── Callee accepts and sends back their answer ─────────────────────────────
-  socket.on(CALL_ANSWER, ({ to, answer, chatId }) => {
-    const targetSocketId = userSocketIds.get(to)
+  // Callee → Caller: relay answer
+  socket.on(CALL_ANSWER, ({ to, answer }) => {
+    const targetSocketId = userSocketIds.get(to.toString())
     if (!targetSocketId) return
-
-    io.to(targetSocketId).emit(CALL_ACCEPTED, {
-      from: user._id.toString(),
-      answer,
-      chatId,
-    })
+    io.to(targetSocketId).emit(CALL_ACCEPTED, { from: user._id.toString(), answer })
   })
 
-  // ── ICE candidate exchange ─────────────────────────────────────────────────
-  // These are network path candidates — WebRTC tries each one to find
-  // the best route between the two peers
+  // Both directions: relay ICE candidates
   socket.on(CALL_ICE_CANDIDATE, ({ to, candidate }) => {
-    const targetSocketId = userSocketIds.get(to)
+    const targetSocketId = userSocketIds.get(to.toString())
     if (!targetSocketId) return
-
-    io.to(targetSocketId).emit(CALL_ICE_CANDIDATE, {
-      from: user._id.toString(),
-      candidate,
-    })
+    io.to(targetSocketId).emit(CALL_ICE_CANDIDATE, { from: user._id.toString(), candidate })
   })
 
-  // ── Someone ends the call ──────────────────────────────────────────────────
+  // Either side ended the call
   socket.on(CALL_ENDED, ({ to }) => {
-    const targetSocketId = userSocketIds.get(to)
+    const targetSocketId = userSocketIds.get(to.toString())
     if (!targetSocketId) return
-
-    io.to(targetSocketId).emit(CALL_ENDED, {
-      from: user._id.toString(),
-    })
+    io.to(targetSocketId).emit(CALL_ENDED, { from: user._id.toString() })
   })
 
-  // ── Someone rejects the call ───────────────────────────────────────────────
+  // Callee rejected
   socket.on(CALL_REJECTED, ({ to }) => {
-    const targetSocketId = userSocketIds.get(to)
+    const targetSocketId = userSocketIds.get(to.toString())
     if (!targetSocketId) return
-
-    io.to(targetSocketId).emit(CALL_REJECTED, {
-      from: user._id.toString(),
-    })
+    io.to(targetSocketId).emit(CALL_REJECTED, { from: user._id.toString() })
   })
 }
