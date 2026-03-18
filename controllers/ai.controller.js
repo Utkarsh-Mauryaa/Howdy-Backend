@@ -13,7 +13,7 @@ export const getAISuggestions = async (req, res) => {
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     const { messages, tone = "friendly" } = req.body;
 
-    // ── Validation ──────────────────────────────────────────────────────────────
+    
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return res.status(400).json({ message: "Messages array is required" });
     }
@@ -45,7 +45,7 @@ Return ONLY a JSON array: ["reply1", "reply2", "reply3"]`;
 
     const responseText = response.text.trim();
 
-    // Parsing json
+    
     let suggestions;
     try {
       const cleaned = responseText.replace(/```json|```/g, "").trim();

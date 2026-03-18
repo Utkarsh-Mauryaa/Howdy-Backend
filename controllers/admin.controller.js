@@ -54,7 +54,7 @@ export const getAllUsers = tryCatch(async (req, res, next) => {
     return {
       name,
       username,
-      avatar: avatar.url, // this overall result is wrapped inside a promise. So you will get result something like Promise { <pending> } if you don't write await Promise.all
+      avatar: avatar.url,
       _id,
       groups,
       friends,
@@ -80,7 +80,7 @@ export const getAllChats = tryCatch(async (req, res, next) => {
         _id,
         groupChat,
         name,
-        avatar: members.slice(0, 3).map((member) => member.avatar.url), // this will be an array of avatar urls of first 3 members
+        avatar: members.slice(0, 3).map((member) => member.avatar.url),
         members: members.map(({ _id, name, avatar }) => ({
           _id,
           name,
@@ -145,12 +145,12 @@ export const getDashboardStats = tryCatch(async (req, res, next) => {
     createdAt: { $gte: lastSeventhDay },
   }).select("createdAt");
 
-  const messages = new Array(7).fill(0); // array to hold message counts for each of the last 7 days
+  const messages = new Array(7).fill(0); 
   lastSevenDaysMessages.forEach((message) => {
     const indexApprox =
       (today.getTime() - message.createdAt.getTime()) / (1000 * 60 * 60 * 24);
     const index = Math.floor(indexApprox);
-    messages[6 - index] += 1; // increment the count for that day
+    messages[6 - index] += 1; 
   });
   const stats = {
     groupsCount,

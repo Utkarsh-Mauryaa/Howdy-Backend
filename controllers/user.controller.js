@@ -101,7 +101,7 @@ export const sendFriendRequest = tryCatch(async (req, res, next) => {
     sender: req.userId,
     receiver: receiverId,
   });
-  emitEvent(req, NEW_REQUEST, [receiverId]); // this will notify the receiver about the new friend request
+  emitEvent(req, NEW_REQUEST, [receiverId]);
   res.status(200).json({
     success: true,
     message: "Friend request sent successfully",
@@ -134,7 +134,7 @@ export const acceptFriendRequest = tryCatch(async (req, res, next) => {
     }),
     request.deleteOne(),
   ]);
-  emitEvent(req, REFETCH_CHATS, members); // this will notify both users to refetch their chats
+  emitEvent(req, REFETCH_CHATS, members);
   res.status(200).json({
     success: true,
     message: "Friend request accepted successfully",
@@ -161,9 +161,7 @@ export const getMyNotifications = tryCatch(async (req, res) => {
   });
 });
 
-// this controller does 2 things
-// 1. get my friends
-// 2. get my friends who are not in a particular group chat (used when adding members to a group chat)
+
 export const getMyFriends = tryCatch(async (req, res, next) => {
   const chatId = req.query.chatId;
   const chats = await Chat.find({
@@ -181,11 +179,11 @@ export const getMyFriends = tryCatch(async (req, res, next) => {
   });
 
   if (chatId) {
-    // we are assuming that frontend will send chatId only when we want to add members to a group chat, chat will be group chat in this case
+    
     const chat = await Chat.findById(chatId);
     const availableFriends = friends.filter(
-      // this logic is used to show me my friends who are not already in the group
-      (friend) => !chat.members.includes(friend._id), // i want only those friends whose ids are not in the chat members array
+      
+      (friend) => !chat.members.includes(friend._id), 
     );
     res.status(200).json({
       success: true,

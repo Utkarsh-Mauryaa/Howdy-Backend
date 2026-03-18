@@ -21,7 +21,7 @@ export const uploadFilesToCloudinary = async (files = []) => {
         getBase64(file),
         {
           resource_type: "auto",
-          public_id: uuid(), // Changed from publicId to public_id
+          public_id: uuid(), 
         },
         (error, result) => {
           if (error) return reject(error);
@@ -33,10 +33,10 @@ export const uploadFilesToCloudinary = async (files = []) => {
 
   const results = await Promise.all(uploadPromises);
 
-  // Format the results to match your schema
+  
   const formattedResults = results.map((result) => ({
-    publicId: result.public_id, // Map public_id to publicId
-    url: result.secure_url, // Use secure_url
+    publicId: result.public_id, 
+    url: result.secure_url, 
   }));
 
   return formattedResults;

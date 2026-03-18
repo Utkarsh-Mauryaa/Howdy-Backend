@@ -13,7 +13,7 @@ const validateHandler = (req, res, next) => {
 
 }
 const registerValidator = () => [
-    body("name") // here each body field is a middleware function
+    body("name") 
         .notEmpty()
         .withMessage("Name is required"),
     body("username")

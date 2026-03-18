@@ -5,7 +5,7 @@ return members.find(member => member._id.toString() !== userId.toString());
 }
 
 export const getSockets = (users=[]) => {
-const socketIDs = users.map(user => userSocketIds.get(user.toString()))  // this will give you the socket ids of a particular user
+const socketIDs = users.map(user => userSocketIds.get(user.toString()))
 return socketIDs;
 }
 

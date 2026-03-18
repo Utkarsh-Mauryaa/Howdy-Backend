@@ -309,7 +309,7 @@ export const deleteChat = tryCatch(async (req, res, next) => {
       new ErrorHandler("You are not allowed to delete this chat", 403),
     );
   }
-  // here we have to delete all messages
+  
   const messagesWithAttachments = await Message.find({
     chat: chatId,
     attachments: { $exists: true, $ne: [] },

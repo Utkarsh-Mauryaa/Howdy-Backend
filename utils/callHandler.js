@@ -39,7 +39,7 @@ export const registerCallHandlers = (io, socket, userSocketIds) => {
     io.to(targetSocketId).emit(CALL_ENDED, { from: user._id.toString() })
   })
 
-  // Callee rejected
+  
   socket.on(CALL_REJECTED, ({ to }) => {
     const targetSocketId = userSocketIds.get(to.toString())
     if (!targetSocketId) return

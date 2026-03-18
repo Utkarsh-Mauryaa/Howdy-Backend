@@ -83,7 +83,7 @@ io.on("connection", (socket) => {
       chat: chatId,
     };
 
-    const memberSocketIDs = getSockets(members); // here we have written this so that we can send messages to different users that are connected to socket with the help of their socketIDs
+    const memberSocketIDs = getSockets(members); 
     io.to(memberSocketIDs).emit(NEW_MESSAGE, {
       chatId,
       message: messageForRealTime,
@@ -109,7 +109,7 @@ io.on("connection", (socket) => {
   socket.on(CHAT_OPENED, ({ userId, members }) => {
     onlineUsers.add(userId.toString());
     const membersSocket = getSockets(members);
-    io.to(membersSocket).emit(ONLINE_USERS, Array.from(onlineUsers)); // we are sending array because we can't send set directly
+    io.to(membersSocket).emit(ONLINE_USERS, Array.from(onlineUsers)); 
   });
 
   socket.on(CHAT_LEAVED, ({ userId, members }) => {
