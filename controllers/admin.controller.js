@@ -107,7 +107,7 @@ export const getAllMessages = tryCatch(async (req, res, next) => {
     .populate("sender", "name avatar _id")
     .populate("chat", "groupChat");
 
-  const transformedMessages = messages?.map(
+  const transformedMessages = messages.map(
     ({ content, attachments, sender, _id, createdAt, chat }) => ({
       _id,
       attachments,
